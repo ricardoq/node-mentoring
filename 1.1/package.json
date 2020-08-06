@@ -1,0 +1,24 @@
+{
+  "name": "mentoring",
+  "version": "1.0.0",
+  "description": "Node mentoring tasks",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "task1": "node index.js &"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ricardoq/node-mentoring.git"
+  },
+  "keywords": [
+    "node",
+    "js"
+  ],
+  "author": "Ricardo Quinonez",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ricardoq/node-mentoring/issues"
+  },
+  "homepage": "https://github.com/ricardoq/node-mentoring#readme"
+}
