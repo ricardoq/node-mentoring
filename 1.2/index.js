@@ -1,5 +1,5 @@
 const fs = require('fs');
-const csv=require('csvtojson')
+const csv=require('csvtojson');
 
 const readStream = fs.createReadStream('./nodejs-hw1-ex1.csv', 'utf8');
 const writeStream = fs.createWriteStream('./nodejs-hw1-ex1.txt', 'utf8');
