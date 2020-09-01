@@ -1,13 +1,13 @@
 const { v4: uuidv4 } = require('uuid');
 const express = require('express');
-const {getAutoSuggestUsers, errorResponse, validateLogin} = require('../util');
+const {validateLogin} = require('../util');
 const Joi = require('joi');
 const validator = require('express-joi-validation').createValidator({});
 const {UserService} = require('../services');
 const {UserModel} = require('../models');
 
 const userController = express.Router();
-const userService = new UserService(UserModel, {getAutoSuggestUsers, errorResponse});
+const userService = new UserService(UserModel);
 
 const autosuggestCriteria = Joi.object().keys({
   login: Joi.string().alphanum(),
@@ -25,61 +25,60 @@ const updateUserSchema = Joi.object().keys({
   password: Joi.string().regex(/^[a-zA-Z0-9]/),
   age: Joi.number().integer().min(18).max(130),
 });
-
+//DONE
 userController.get('/user', validator.query(autosuggestCriteria), (req, res) => {
   const {login} = req.query;
-  const filteredUsers = login ? getAutoSuggestUsers(login, users) : users;
-
-  res.json(filteredUsers.filter(u => !u.isDeleted));
+  userService.getAutoSuggestUsers(login)
+            .then(response => res.json(response))
+            .catch(error => res.status(500).json(`Error: ${error}`));
 });
-
-userController.post('/user', validateLogin, validator.body(newUserSchema), (req, res) => {
+//DONE
+userController.post('/user', validateLogin(userService), validator.body(newUserSchema), (req, res) => {
   const {body} = req;
   const newUser = {
     ...body,
-    id: uuidv4(),
     isDeleted: false,
   };
-  users.push(newUser);
-  res.json(newUser);
+  userService.addUser(newUser)
+             .then(response => res.json(response))
+             .catch(error => res.status(500).json(`Error: ${error}`));
 });
 
-userController.patch('/user', validateLogin,validator.body(updateUserSchema), (req, res, next) => {
+userController.patch('/user',
+                     validateLogin(userService),
+                     validator.body(updateUserSchema),
+                     (req, res) => {
   const {body} = req;
-  let userIndex = users.findIndex(user => user.id === body.id);
 
-  if (userIndex === -1) {
-    res.json(errorResponse([{path: 'id', message: 'No user found'}]));
-  } else {
-    users[userIndex] = {
-      ...users[userIndex],
-      ...body,
-    };
-
-    res.json(users[userIndex]);
-  }
+  userService.updateUser(body)
+             .then(response => res.json(response))
+             .catch(error => res.status(500).json(`Error: ${error}`));
 });
-
+//DONE
 userController.get('/user/:id', (req, res) => {
   const {id = ''} = req.params;
-  const userIndex = users.find(i => i.id === id && !i.isDeleted);
-  console.log(userIndex);
-  if (userIndex) {
-    res.json(userIndex);
-  } else {
-    res.status(404).json('No user found');
-  }
+  userService.findUser(id)
+            .then(response => {
+              if (response) {
+                res.json(response)
+              } else {
+                res.status(404).json('No user found');
+              }
+            })
+            .catch(error => res.status(500).json(`Error: ${error}`));
 });
-
+//DONE
 userController.delete('/user/:id', (req, res) => {
   const {id = ''} = req.params;
-  let userIndex = users.findIndex(user => user.id === id);
-  if (userIndex === -1) {
-    res.status(404).json('No user found');
-  } else {
-    users[userIndex].isDeleted = true;
-    res.json(users.filter(u => !u.isDeleted));
-  }
+  userService.deleteUser(id)
+              .then(response => {
+                if (response) {
+                  res.json('Item deleted');
+                } else {
+                  res.status(404).json('No user found');
+                }
+              })
+              .catch(error => res.status(500).json(`Error: ${error}`));
 });
 
 module.exports = userController;
