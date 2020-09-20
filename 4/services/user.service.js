@@ -38,6 +38,11 @@ module.exports = class UserService {
     return response;
   }
 
+  async addUsersToGroup(groupId, userId) {
+    const response = await this.userModel.addUsersToGroup(groupId, userId);
+    return response;
+  }
+
   removeDeleted(userList) {
     return userList.filter(u => !u.isdeleted);
   }

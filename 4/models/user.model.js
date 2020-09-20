@@ -57,4 +57,11 @@ module.exports = class UserModel {
           .query('UPDATE users SET isDeleted = TRUE WHERE id = $1', [id]);
     return this.getUser(id);
   }
+
+  async addUsersToGroup(groupId, userId) {
+    const groupLink = await this.pg
+          .query('INSERT INTO users_groups (users_id, groups_id) VALUES ($1, $2) RETURNING *'
+                , [userId, groupId]);
+    return groupLink[0];
+  }
 };

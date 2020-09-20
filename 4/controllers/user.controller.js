@@ -80,4 +80,12 @@ userController.delete('/user/:id', (req, res) => {
               .catch(error => res.status(500).json(`Error: ${error}`));
 });
 
+userController.get('/user/:idUser/group/:idGroup', (req, res) => {
+  const {idUser = '', idGroup = ''} = req.params;
+
+  userService.addUsersToGroup(idGroup, idUser)
+            .then(response => res.json(response))
+            .catch(error => res.status(500).json(`Error: ${error}`));
+});
+
 module.exports = userController;
