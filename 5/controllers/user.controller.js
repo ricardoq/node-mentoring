@@ -4,6 +4,7 @@ const Joi = require('joi');
 const validator = require('express-joi-validation').createValidator({});
 const {UserService} = require('../services');
 const {UserModel} = require('../models');
+const {logger} = require('../config');
 
 const userController = express.Router();
 const userService = new UserService(UserModel);
@@ -29,7 +30,16 @@ userController.get('/user', validator.query(autosuggestCriteria), (req, res) => 
   const {login} = req.query;
   userService.getAutoSuggestUsers(login)
             .then(response => res.json(response))
-            .catch(error => res.status(500).json(`Error: ${error}`));
+            .catch(error => {
+                logger.error({
+                  url: req.url,
+                  method: req.method,
+                  message: error.toString(),
+                  params: req.params,
+                  body: req.body
+                });
+                res.status(500).json(`Error: ${error}`)
+              });
 });
 
 userController.post('/user', validateLogin(userService), validator.body(newUserSchema), (req, res) => {
@@ -40,7 +50,16 @@ userController.post('/user', validateLogin(userService), validator.body(newUserS
   };
   userService.addUser(newUser)
              .then(response => res.json(response))
-             .catch(error => res.status(500).json(`Error: ${error}`));
+             .catch(error => {
+                logger.error({
+                  url: req.url,
+                  method: req.method,
+                  message: error.toString(),
+                  params: req.params,
+                  body: req.body
+                });
+                res.status(500).json(`Error: ${error}`)
+              });
 });
 
 userController.patch('/user',
@@ -51,7 +70,16 @@ userController.patch('/user',
 
   userService.updateUser(body)
              .then(response => res.json(response))
-             .catch(error => res.status(500).json(`Error: ${error}`));
+             .catch(error => {
+                logger.error({
+                  url: req.url,
+                  method: req.method,
+                  message: error.toString(),
+                  params: req.params,
+                  body: req.body
+                });
+                res.status(500).json(`Error: ${error}`)
+              });
 });
 
 userController.get('/user/:id', (req, res) => {
@@ -64,11 +92,21 @@ userController.get('/user/:id', (req, res) => {
                 res.status(404).json('No user found');
               }
             })
-            .catch(error => res.status(500).json(`Error: ${error}`));
+            .catch(error => {
+              logger.error({
+                  url: req.url,
+                  method: req.method,
+                  message: error.toString(),
+                  params: req.params,
+                  body: req.body
+                });
+              res.status(500).json(`Error: ${error}`)
+            });
 });
 
 userController.delete('/user/:id', (req, res) => {
   const {id = ''} = req.params;
+  new Error('error');
   userService.deleteUser(id)
               .then(response => {
                 if (response) {
@@ -77,7 +115,16 @@ userController.delete('/user/:id', (req, res) => {
                   res.status(404).json('No user found');
                 }
               })
-              .catch(error => res.status(500).json(`Error: ${error}`));
+              .catch(error => {
+                logger.error({
+                  url: req.url,
+                  method: req.method,
+                  message: error.toString(),
+                  params: req.params,
+                  body: req.body
+                });
+                res.status(500).json(`Error: ${error}`)
+              });
 });
 
 userController.get('/user/:idUser/group/:idGroup', (req, res) => {
@@ -85,7 +132,16 @@ userController.get('/user/:idUser/group/:idGroup', (req, res) => {
 
   userService.addUsersToGroup(idGroup, idUser)
             .then(response => res.json(response))
-            .catch(error => res.status(500).json(`Error: ${error}`));
+            .catch(error => {
+                logger.error({
+                  url: req.url,
+                  method: req.method,
+                  message: error.toString(),
+                  params: req.params,
+                  body: req.body
+                });
+                res.status(500).json(`Error: ${error}`)
+              });
 });
 
 module.exports = userController;
