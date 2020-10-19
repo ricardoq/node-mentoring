@@ -1,5 +1,5 @@
 const express = require('express');
-const {permissionsEnum} = require('../util');
+const {jwtChecker, permissionsEnum} = require('../util');
 const Joi = require('joi');
 const validator = require('express-joi-validation').createValidator({});
 const {logger} = require('../config');
@@ -27,7 +27,7 @@ const updateGroupSchema = Joi.object().keys({
                   ),
 });
 
-groupController.get('/group/:id', (req, res) => {
+groupController.get('/group/:id', jwtChecker, (req, res) => {
   const {id = ''} = req.params;
   groupService.findGroup(id)
             .then(response => {
@@ -49,7 +49,7 @@ groupController.get('/group/:id', (req, res) => {
               });
 });
 
-groupController.get('/group', (req, res) => {
+groupController.get('/group', jwtChecker, (req, res) => {
   groupService.getGroups()
               .then(response => res.json(response))
               .catch(error => {
@@ -64,7 +64,9 @@ groupController.get('/group', (req, res) => {
               });
 });
 
-groupController.post('/group', validator.body(newGroupSchema), (req, res) => {
+groupController.post('/group',
+                      jwtChecker,
+                      validator.body(newGroupSchema), (req, res) => {
   const {body} = req;
   const newGroup = {
     ...body,
@@ -86,6 +88,7 @@ groupController.post('/group', validator.body(newGroupSchema), (req, res) => {
 
 groupController.patch('/group',
                      validator.body(updateGroupSchema),
+                     jwtChecker,
                      (req, res) => {
   const {body} = req;
 
@@ -103,7 +106,7 @@ groupController.patch('/group',
               });
 });
 
-groupController.delete('/group/:id', (req, res) => {
+groupController.delete('/group/:id', jwtChecker, (req, res) => {
   const {id = ''} = req.params;
   groupService.deleteGroup(id)
               .then(response => {

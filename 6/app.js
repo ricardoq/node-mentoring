@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const {userController, groupController} = require('./controllers');
+const {userController, groupController, authController} = require('./controllers');
 const {logger} = require('./config');
 
 const app = express();
@@ -28,7 +28,7 @@ app.use((req, res, next)=> {
   next();
 });
 
-app.use('/', userController, groupController);
+app.use('/', userController, groupController, authController);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}!`)

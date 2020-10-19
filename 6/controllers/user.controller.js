@@ -1,5 +1,5 @@
 const express = require('express');
-const {validateLogin} = require('../util');
+const {validateLogin, jwtChecker} = require('../util');
 const Joi = require('joi');
 const validator = require('express-joi-validation').createValidator({});
 const {UserService} = require('../services');
@@ -26,7 +26,7 @@ const updateUserSchema = Joi.object().keys({
   age: Joi.number().integer().min(18).max(130),
 });
 
-userController.get('/user', validator.query(autosuggestCriteria), (req, res) => {
+userController.get('/user', validator.query(autosuggestCriteria), jwtChecker, (req, res) => {
   const {login} = req.query;
   userService.getAutoSuggestUsers(login)
             .then(response => res.json(response))
@@ -42,7 +42,11 @@ userController.get('/user', validator.query(autosuggestCriteria), (req, res) => 
               });
 });
 
-userController.post('/user', validateLogin(userService), validator.body(newUserSchema), (req, res) => {
+userController.post('/user',
+                    validateLogin(userService),
+                    validator.body(newUserSchema),
+                    jwtChecker,
+                    (req, res) => {
   const {body} = req;
   const newUser = {
     ...body,
@@ -65,6 +69,7 @@ userController.post('/user', validateLogin(userService), validator.body(newUserS
 userController.patch('/user',
                      validateLogin(userService),
                      validator.body(updateUserSchema),
+                     jwtChecker,
                      (req, res) => {
   const {body} = req;
 
@@ -82,7 +87,7 @@ userController.patch('/user',
               });
 });
 
-userController.get('/user/:id', (req, res) => {
+userController.get('/user/:id', jwtChecker, (req, res) => {
   const {id = ''} = req.params;
   userService.findUser(id)
             .then(response => {
@@ -104,7 +109,7 @@ userController.get('/user/:id', (req, res) => {
             });
 });
 
-userController.delete('/user/:id', (req, res) => {
+userController.delete('/user/:id', jwtChecker, (req, res) => {
   const {id = ''} = req.params;
   new Error('error');
   userService.deleteUser(id)
@@ -127,7 +132,7 @@ userController.delete('/user/:id', (req, res) => {
               });
 });
 
-userController.get('/user/:idUser/group/:idGroup', (req, res) => {
+userController.get('/user/:idUser/group/:idGroup', jwtChecker, (req, res) => {
   const {idUser = '', idGroup = ''} = req.params;
 
   userService.addUsersToGroup(idGroup, idUser)
