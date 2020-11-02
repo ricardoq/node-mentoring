@@ -1,5 +1,5 @@
 const express = require('express');
-const {validateLogin, jwtChecker} = require('../util');
+const {jwtChecker} = require('../util');
 const Joi = require('joi');
 const validator = require('express-joi-validation').createValidator({});
 const {UserService} = require('../services');
@@ -43,7 +43,6 @@ userController.get('/user', validator.query(autosuggestCriteria), jwtChecker, (r
 });
 
 userController.post('/user',
-                    validateLogin(userService),
                     validator.body(newUserSchema),
                     jwtChecker,
                     (req, res) => {
@@ -67,7 +66,6 @@ userController.post('/user',
 });
 
 userController.patch('/user',
-                     validateLogin(userService),
                      validator.body(updateUserSchema),
                      jwtChecker,
                      (req, res) => {

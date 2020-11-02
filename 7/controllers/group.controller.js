@@ -27,28 +27,6 @@ const updateGroupSchema = Joi.object().keys({
                   ),
 });
 
-groupController.get('/group/:id', jwtChecker, (req, res) => {
-  const {id = ''} = req.params;
-  groupService.findGroup(id)
-            .then(response => {
-              if (response) {
-                res.json(response)
-              } else {
-                res.status(404).json('No user found');
-              }
-            })
-            .catch(error => {
-                logger.error({
-                  url: req.url,
-                  method: req.method,
-                  message: error.toString(),
-                  params: req.params,
-                  body: req.body
-                });
-                res.status(500).json(`Error: ${error}`)
-              });
-});
-
 groupController.get('/group', jwtChecker, (req, res) => {
   groupService.getGroups()
               .then(response => res.json(response))
@@ -95,6 +73,28 @@ groupController.patch('/group',
   groupService.updateGroup(body)
               .then(response => res.json(response))
               .catch(error => {
+                logger.error({
+                  url: req.url,
+                  method: req.method,
+                  message: error.toString(),
+                  params: req.params,
+                  body: req.body
+                });
+                res.status(500).json(`Error: ${error}`)
+              });
+});
+
+groupController.get('/group/:id', jwtChecker, (req, res) => {
+  const {id = ''} = req.params;
+  groupService.findGroup(id)
+            .then(response => {
+              if (response) {
+                res.json(response)
+              } else {
+                res.status(404).json('No user found');
+              }
+            })
+            .catch(error => {
                 logger.error({
                   url: req.url,
                   method: req.method,

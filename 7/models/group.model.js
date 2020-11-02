@@ -1,10 +1,9 @@
 const Pg = require('pg').Client;
-const {connectionString} = require('../util');
 
 module.exports = class GroupModel {
 
   constructor() {
-    this.pg = new Pg(connectionString);
+    this.pg = new Pg(process.env.DB_URL);
     this.pg.connect();
     this.authenticateConnection().then(res => console.log(res.rows[0].message));
   }

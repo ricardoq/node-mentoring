@@ -1,12 +1,9 @@
 var Pg = require('pg').Client;
 
 module.exports = class UserModel {
-  connectionString = 'postgres://ygrxizjg:oDc6XCH2PbJRGS-T9HB6r65-tsgac3__@lallah.db.elephantsql.com:5432/ygrxizjg';
-
   constructor() {
-    this.pg = new Pg(this.connectionString);
+    this.pg = new Pg(process.env.DB_URL);
     this.pg.connect();
-    this.authenticateConnection().then(res => console.log(res.rows[0].message));
   }
 
   async authenticateConnection() {
