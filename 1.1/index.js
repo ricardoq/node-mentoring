@@ -1,16 +1,12 @@
-let response = '';
+function ReadString() {
+  console.log('Add a string in order to revert: ');
 
-process.stdin.on('readable', () => {
-  const chunk = process.stdin.read();
-  const key = chunk.toString().charCodeAt(0);
+  process.stdin.on('readable', () => {
+    const chunk = process.stdin.read();
 
-  if (key !== 13) {
-    response += chunk;
+    console.log(chunk.toString().split('').reverse().join(''));
+    console.log('----------------');
     process.stdin.resume();
-    return;
-  }
-
-  console.log(response.split('').reverse().join(''));
-  response = '';
-  process.stdin.resume();
-});
+  });
+}
+ReadString();
