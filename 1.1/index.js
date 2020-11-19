@@ -1,10 +1,16 @@
-const readline = require('readline');
+let response = '';
 
-const interface = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
+process.stdin.on('readable', () => {
+  const chunk = process.stdin.read();
+  const key = chunk.toString().charCodeAt(0);
 
-interface.on('line', (res) => {
-  console.log(res.split('').reverse().join(''));
+  if (key !== 13) {
+    response += chunk;
+    process.stdin.resume();
+    return;
+  }
+
+  console.log(response.split('').reverse().join(''));
+  response = '';
+  process.stdin.resume();
 });
